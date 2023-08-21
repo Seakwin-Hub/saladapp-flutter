@@ -7,6 +7,7 @@ import 'package:saladapp/services/api_handler.dart';
 import 'package:saladapp/share/widget/bottom_sheet_navigator.dart';
 import 'package:saladapp/share/widget/fontcustom_widget.dart';
 import 'package:saladapp/share/widget/header_widget.dart';
+import 'package:saladapp/share/widget/listview_widget.dart';
 
 class DiseaseScreen extends StatefulWidget {
   const DiseaseScreen({super.key});
@@ -100,12 +101,13 @@ class _DiseaseScreenState extends State<DiseaseScreen> {
                               vertical: size.height * 0.005,
                               horizontal: size.width * 0.012),
                           height: size.height * 0.18,
-                          // child: ListViewWidget(
-                          //   imageFile: 1,
-                          //   size: size,
-                          //   itemCount: diseaseList.length,
-                          //   imageSize: size.width * 0.43,
-                          // ),
+                          child: ListViewWidget(
+                            imgtpye: 'alldisease',
+                            type: '',
+                            size: size,
+                            itemCount: diseaseList.length,
+                            imageSize: size.width * 0.43,
+                          ),
                         ),
                         ListView.builder(
                           physics: const NeverScrollableScrollPhysics(),
@@ -178,12 +180,13 @@ class _DiseaseScreenState extends State<DiseaseScreen> {
                                           begin: Alignment.topLeft,
                                           end: Alignment.bottomRight),
                                       borderRadius: BorderRadius.circular(15)),
-                                  // child: ListViewWidget(
-                                  //   imageFile: 1,
-                                  //   size: size,
-                                  //   itemCount: 5,
-                                  //   imageSize: size.width * 0.35,
-                                  // ),
+                                  child: ListViewWidget(
+                                    imgtpye: disease.key,
+                                    type: 'ជំងឺ',
+                                    size: size,
+                                    itemCount: 5,
+                                    imageSize: size.width * 0.35,
+                                  ),
                                 ),
                               ],
                             );

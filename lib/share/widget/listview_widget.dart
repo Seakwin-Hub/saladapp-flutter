@@ -27,8 +27,23 @@ class ListViewWidget extends StatefulWidget {
 class _ListViewWidgetState extends State<ListViewWidget> {
   bool hasimg = false;
   ImageFetch? imageFetch;
+  List<ImageFetch> getImgDisease = [];
   @override
   void initState() {
+    Future.delayed(const Duration(milliseconds: 0), () {
+      setState(() {
+        if (widget.imgtpye == 'alldisease') {
+          APIHandler.fetchImageDisease('imagedata/disease').then((value) {
+            getImgDisease = value;
+            if (getImgDisease.isNotEmpty) {
+              setState(() {
+                hasimg = true;
+              });
+            }
+          });
+        }
+      });
+    });
     Future.delayed(const Duration(milliseconds: 0), () {
       setState(() {
         if (widget.type == 'សាលាដ') {
@@ -41,7 +56,7 @@ class _ListViewWidgetState extends State<ListViewWidget> {
               hasimg = true;
             });
           });
-        } else {
+        } else if (widget.type == 'ជំងឺ') {
           APIHandler.fetchImageDisease('imagedata/disease/${widget.imgtpye}')
               .then((value) {
             for (var element in value) {
@@ -59,10 +74,14 @@ class _ListViewWidgetState extends State<ListViewWidget> {
 
   @override
   Widget build(BuildContext context) {
+    // print(imageFetch!.images.length);
+
+    print(getImgDisease.length);
     return ListView.builder(
       shrinkWrap: true,
       scrollDirection: Axis.horizontal,
-      itemCount: imageFetch != null ? imageFetch!.images.length : 0,
+      itemCount:
+          imageFetch != null ? imageFetch!.images.length : getImgDisease.length,
       itemBuilder: (context, indexs) {
         var imageFile;
         imageFetch != null
@@ -95,9 +114,16 @@ class _ListViewWidgetState extends State<ListViewWidget> {
                                 imageFile,
                                 fit: BoxFit.fill,
                               )
-                            : Image.asset(ImageAssets.loading,
-                                width: widget.size.width * 0.03,
-                                fit: BoxFit.cover),
+                            : getImgDisease.isNotEmpty
+                                ? Image.memory(
+                                    base64Decode(getImgDisease[indexs]
+                                        .images[3]
+                                        .toString()),
+                                    fit: BoxFit.fill,
+                                  )
+                                : Image.asset(ImageAssets.loading,
+                                    width: widget.size.width * 0.03,
+                                    fit: BoxFit.cover),
                       ),
               ),
             ),

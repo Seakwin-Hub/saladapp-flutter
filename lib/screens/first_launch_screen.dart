@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:saladapp/resource/assets_route.dart';
 import 'package:saladapp/screens/login_screen.dart';
+import 'package:saladapp/services/api_handler.dart';
 import 'package:saladapp/share/color/color_constan.dart';
 import 'package:saladapp/share/widget/fontcustom_widget.dart';
 
@@ -13,15 +14,29 @@ class FirstLaunch extends StatefulWidget {
 }
 
 class _FirstLaunchState extends State<FirstLaunch> {
+  bool isLoading = false;
   @override
   void initState() {
+    Future.delayed(const Duration(milliseconds: 0), () {
+      setState(() {
+        APIHandler.fetchImageSalad('imagedata/salad/iceberg').then((value) {
+          if (value.isNotEmpty) {
+            setState(() {
+              isLoading = true;
+            });
+          }
+        });
+      });
+    });
     Future.delayed(const Duration(seconds: 3), () {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => const LoginScreen(),
-        ),
-      );
+      if (isLoading == true) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const LoginScreen(),
+          ),
+        );
+      }
     });
     super.initState();
   }

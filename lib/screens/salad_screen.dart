@@ -20,29 +20,22 @@ class SaladScreen extends StatefulWidget {
 class _SaladScreenState extends State<SaladScreen> {
   List<Salad> saladList = [];
   List<ImageFetch> imageSalad = [];
-  bool isLoading = true;
+  bool isLoading = false;
   @override
   void initState() {
     Future.delayed(const Duration(milliseconds: 100), () {
       setState(() {
         APIHandler.fetchSaladData('saladlist').then((value) {
           saladList = value;
-          setState(() {
-            isLoading = false;
-          });
+          if (saladList.isNotEmpty) {
+            setState(() {
+              isLoading = true;
+            });
+          }
         });
       });
     });
-    Future.delayed(const Duration(milliseconds: 150), () {
-      setState(() {
-        APIHandler.fetchImageSalad('imagedata/salad').then((value) {
-          imageSalad = value;
-          setState(() {
-            isLoading = false;
-          });
-        });
-      });
-    });
+
     super.initState();
   }
 
@@ -63,10 +56,10 @@ class _SaladScreenState extends State<SaladScreen> {
             SizedBox(
               height: size.height * 0.021,
             ),
-            isLoading == true
+            isLoading == false
                 ? Padding(
                     padding: EdgeInsets.only(
-                        left: size.width * 0.1, top: size.height * 0.3),
+                        left: size.width * 0.05, top: size.height * 0.25),
                     child: LottieBuilder.asset(ImageAssets.progressapi,
                         width: size.width * 0.4, fit: BoxFit.contain),
                   )

@@ -85,7 +85,7 @@ class _ListViewWidgetState extends State<ListViewWidget> {
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(5),
                 ),
-                child: hasimg == false && imageFetch == null
+                child: hasimg == false
                     ? Image.asset(ImageAssets.loading,
                         width: widget.size.width * 0.03, fit: BoxFit.cover)
                     : ClipRRect(

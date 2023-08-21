@@ -24,11 +24,7 @@ class AllScreen extends StatefulWidget {
 }
 
 class _AllScreenState extends State<AllScreen> {
-  bool isLoading1 = false,
-      isLoading2 = false,
-      isLoading3 = false,
-      isLoading4 = false,
-      hasimg = false;
+  bool isLoading = false, hasimg = false;
   List<Disease> diseaseList = [];
   List<Salad> saladList = [];
   List<ImageFetch> getImgSalad = [];
@@ -41,10 +37,13 @@ class _AllScreenState extends State<AllScreen> {
       setState(() {
         APIHandler.fetchSaladData('saladlist').then((value) {
           saladList = value;
+          print(value);
           combineList.addAll(saladList);
-          setState(() {
-            isLoading1 = true;
-          });
+          if (saladList.isNotEmpty) {
+            setState(() {
+              isLoading = true;
+            });
+          }
         });
       });
     });
@@ -53,9 +52,11 @@ class _AllScreenState extends State<AllScreen> {
         APIHandler.fetchDiseaseData('diseaselist').then((value) {
           diseaseList = value;
           combineList.addAll(diseaseList);
-          setState(() {
-            isLoading2 = true;
-          });
+          if (diseaseList.isNotEmpty) {
+            setState(() {
+              isLoading = true;
+            });
+          }
         });
       });
     });
@@ -63,9 +64,11 @@ class _AllScreenState extends State<AllScreen> {
       setState(() {
         APIHandler.fetchImageSalad('imagedata/salad').then((value) {
           getImgSalad = value;
-          setState(() {
-            isLoading3 = true;
-          });
+          if (getImgSalad.isNotEmpty) {
+            setState(() {
+              isLoading = true;
+            });
+          }
         });
       });
     });
@@ -73,9 +76,11 @@ class _AllScreenState extends State<AllScreen> {
       setState(() {
         APIHandler.fetchImageDisease('imagedata/disease').then((value) {
           getImgDisease = value;
-          setState(() {
-            isLoading4 = true;
-          });
+          if (getImgDisease.isNotEmpty) {
+            setState(() {
+              isLoading = true;
+            });
+          }
         });
       });
     });
@@ -84,6 +89,7 @@ class _AllScreenState extends State<AllScreen> {
 
   @override
   Widget build(BuildContext context) {
+    print(isLoading);
     List<String> nameOfSD = ['សាលាដ', 'ជំងឺ'];
     var size = MediaQuery.of(context).size;
     return Scaffold(
@@ -101,10 +107,7 @@ class _AllScreenState extends State<AllScreen> {
           SizedBox(
             height: size.height * 0.021,
           ),
-          isLoading1 == false &&
-                  isLoading2 == false &&
-                  isLoading3 == false &&
-                  isLoading4 == false
+          isLoading == false
               ? Padding(
                   padding: EdgeInsets.only(
                       left: size.width * 0.3, top: size.height * 0.3),

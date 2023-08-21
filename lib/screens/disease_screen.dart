@@ -7,7 +7,6 @@ import 'package:saladapp/services/api_handler.dart';
 import 'package:saladapp/share/widget/bottom_sheet_navigator.dart';
 import 'package:saladapp/share/widget/fontcustom_widget.dart';
 import 'package:saladapp/share/widget/header_widget.dart';
-import 'package:saladapp/share/widget/listview_widget.dart';
 
 class DiseaseScreen extends StatefulWidget {
   const DiseaseScreen({super.key});
@@ -18,13 +17,18 @@ class DiseaseScreen extends StatefulWidget {
 
 class _DiseaseScreenState extends State<DiseaseScreen> {
   List<Disease> diseaseList = [];
-
+  bool isLoading = false;
   @override
   void initState() {
     Future.delayed(const Duration(milliseconds: 100), () {
       setState(() {
         APIHandler.fetchDiseaseData('diseaselist').then((value) {
           diseaseList = value;
+          if (diseaseList.isNotEmpty) {
+            setState(() {
+              isLoading = true;
+            });
+          }
         });
       });
     });
@@ -50,7 +54,7 @@ class _DiseaseScreenState extends State<DiseaseScreen> {
           SizedBox(
             height: size.height * 0.021,
           ),
-          diseaseList.isEmpty
+          isLoading == false
               ? Padding(
                   padding: EdgeInsets.only(
                       left: size.width * 0.3, top: size.height * 0.3),

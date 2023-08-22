@@ -66,9 +66,67 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                     ),
                   ),
+                  isEdit
+                      ? const Text('')
+                      : TextButton(
+                          onPressed: () {
+                            showModalBottomSheet(
+                                backgroundColor:
+                                    const Color.fromARGB(255, 219, 217, 210),
+                                context: context,
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(20)),
+                                builder: (context) {
+                                  return Padding(
+                                    padding: EdgeInsets.all(20),
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        ListTile(
+                                          leading: Image.asset(
+                                            ImageAssets.takecamera,
+                                            width: size.width * 0.08,
+                                            fit: BoxFit.fill,
+                                          ),
+                                          title: Text(
+                                            "ថតរូបភាព",
+                                            style: customFontBassac(
+                                                20, Colors.black54),
+                                          ),
+                                          onTap: () {},
+                                        ),
+                                        SizedBox(
+                                          height: 10,
+                                        ),
+                                        ListTile(
+                                          leading: Image.asset(
+                                            ImageAssets.imgbrowse,
+                                            width: size.width * 0.08,
+                                          ),
+                                          title: Text(
+                                            "ស្វែងរករូបភាព",
+                                            style: customFontBassac(
+                                                20, Colors.black54),
+                                          ),
+                                          onTap: () {},
+                                        ),
+                                        SizedBox(
+                                          height: 20,
+                                        )
+                                      ],
+                                    ),
+                                  );
+                                });
+                          },
+                          child: Text(
+                            'ប្តូររូបភាព',
+                            style: customFontSR(
+                                size.width * 0.03, Colors.red.shade400),
+                          ),
+                        ),
                   Container(
                     margin: EdgeInsets.only(
-                        top: size.height * 0.03,
+                        top: size.height * 0.01,
                         left: size.width * 0.06,
                         right: size.width * 0.06),
                     decoration: BoxDecoration(

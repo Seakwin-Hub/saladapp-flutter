@@ -20,9 +20,11 @@ class BottomNavigatorWidget extends StatefulWidget {
 class _BottomNavigatorWidgetState extends State<BottomNavigatorWidget> {
   @override
   Widget build(BuildContext context) {
+    Size size = MediaQuery.of(context).size;
     return Container(
       color: ColorsConstan.secondaryColor.withOpacity(0.7),
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+      padding: EdgeInsets.symmetric(
+          horizontal: size.width * 0.05, vertical: size.height * 0.015),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -39,10 +41,10 @@ class _BottomNavigatorWidgetState extends State<BottomNavigatorWidget> {
                 color: widget.screen == 1
                     ? Colors.blue
                     : ColorsConstan.primaryBackgroundColor,
-                size: 26,
+                size: size.width * 0.08,
               )),
           Padding(
-            padding: const EdgeInsets.only(right: 10),
+            padding: EdgeInsets.only(right: size.width * 0.02),
             child: InkWell(
                 onTap: () {
                   Navigator.push(
@@ -53,8 +55,8 @@ class _BottomNavigatorWidgetState extends State<BottomNavigatorWidget> {
                 },
                 child: SvgPicture.asset(
                   ImageAssets.salad,
-                  width: 26,
-                  height: 26,
+                  width: size.width * 0.05,
+                  height: size.height * 0.03,
                   // ignore: deprecated_member_use
                   color: widget.screen == 2
                       ? Colors.blue
@@ -74,7 +76,7 @@ class _BottomNavigatorWidgetState extends State<BottomNavigatorWidget> {
                 color: widget.screen == 3
                     ? Colors.blue
                     : ColorsConstan.primaryBackgroundColor,
-                size: 26,
+                size: size.width * 0.08,
               )),
           IconButton(
               onPressed: () {
@@ -89,7 +91,7 @@ class _BottomNavigatorWidgetState extends State<BottomNavigatorWidget> {
                 color: widget.screen == 4
                     ? Colors.blue
                     : ColorsConstan.primaryBackgroundColor,
-                size: 26,
+                size: size.width * 0.08,
               )),
           IconButton(
               onPressed: () {
@@ -104,7 +106,7 @@ class _BottomNavigatorWidgetState extends State<BottomNavigatorWidget> {
                 color: widget.screen == 5
                     ? Colors.blue
                     : ColorsConstan.primaryBackgroundColor,
-                size: 26,
+                size: size.width * 0.08,
               )),
         ],
       ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:saladapp/resource/assets_route.dart';
 import 'package:saladapp/screens/fetchimagetest.dart';
 import 'package:saladapp/screens/login_screen.dart';
@@ -13,10 +14,42 @@ class ProfileScreen extends StatefulWidget {
   State<ProfileScreen> createState() => _ProfileScreenState();
 }
 
-bool isEdit = true;
-String changetxt = 'កែប្រែ';
-
 class _ProfileScreenState extends State<ProfileScreen> {
+  final ImagePicker _picker = ImagePicker();
+  XFile? image;
+
+  Future<void> pickImage() async {
+    try {
+      final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
+      if (pickedFile != null) {
+        setState(() {
+          image = pickedFile;
+        });
+      }
+    } catch (e) {
+      // ignore: avoid_print
+      print(e);
+    }
+  }
+
+  Future<void> pickerCamera() async {
+    try {
+      // ignore: deprecated_member_use
+      final pickedFile = await _picker.pickImage(source: ImageSource.camera);
+      setState(() {
+        if (pickedFile != null) {
+          image = pickedFile;
+        }
+      });
+    } catch (e) {
+      // ignore: avoid_print
+      print(e);
+    }
+  }
+
+  bool isEdit = true;
+  String changetxt = 'កែប្រែ';
+
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
@@ -78,10 +111,27 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     borderRadius: BorderRadius.circular(20)),
                                 builder: (context) {
                                   return Padding(
-                                    padding: EdgeInsets.all(20),
+                                    padding: EdgeInsets.symmetric(
+                                        horizontal: size.width * 0.02,
+                                        vertical: size.height * 0.01),
                                     child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       mainAxisSize: MainAxisSize.min,
                                       children: [
+                                        Padding(
+                                          padding: EdgeInsets.symmetric(
+                                              horizontal: size.width * 0.07,
+                                              vertical: size.height * 0.01),
+                                          child: Text('សូមជ្រើសរើសរូបភាព',
+                                              style: customFontBassac(
+                                                  size.width * 0.05,
+                                                  const Color.fromARGB(
+                                                      255, 58, 114, 9))),
+                                        ),
+                                        Divider(
+                                          height: size.height * 0.005,
+                                        ),
                                         ListTile(
                                           leading: Image.asset(
                                             ImageAssets.takecamera,
@@ -91,12 +141,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                           title: Text(
                                             "ថតរូបភាព",
                                             style: customFontBassac(
-                                                20, Colors.black54),
+                                                size.width * 0.05,
+                                                Colors.black54),
                                           ),
-                                          onTap: () {},
+                                          onTap: () {
+                                            pickerCamera();
+                                            Navigator.pop(context);
+                                          },
                                         ),
                                         SizedBox(
-                                          height: 10,
+                                          height: size.height * 0.005,
                                         ),
                                         ListTile(
                                           leading: Image.asset(
@@ -106,12 +160,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                           title: Text(
                                             "ស្វែងរករូបភាព",
                                             style: customFontBassac(
-                                                20, Colors.black54),
+                                                size.width * 0.05,
+                                                Colors.black54),
                                           ),
-                                          onTap: () {},
+                                          onTap: () {
+                                            pickImage();
+                                            Navigator.pop(context);
+                                          },
                                         ),
                                         SizedBox(
-                                          height: 20,
+                                          height: size.height * 0.02,
                                         )
                                       ],
                                     ),

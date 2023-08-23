@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:saladapp/resource/assets_route.dart';
+import 'package:saladapp/screens/otp_screen.dart';
 import 'package:saladapp/screens/login_screen.dart';
 import 'package:saladapp/share/widget/fontcustom_widget.dart';
 import 'package:saladapp/share/widget/textformfield_widget.dart';
@@ -56,7 +57,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       lblText: 'ឈ្មោះអ្នកប្រើប្រាស់',
                       pwStyle: false,
                     ),
-
                     SizedBox(
                       height: size.height * 0.038,
                     ),
@@ -64,7 +64,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       onChanged: (p0) {},
                       controller: email,
                       size: size,
-                      lblText: 'អ៊ីមែល',
+                      lblText: 'លេខទូរស័ព្ទ',
                       pwStyle: false,
                     ),
                     SizedBox(
@@ -80,22 +80,27 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     const SizedBox(
                       height: 10,
                     ),
-                    // Align(
-                    //   alignment: Alignment.bottomRight,
-                    //   child: InkWell(
-                    //     onTap: () {},
-                    //     child: Text(
-                    //       'ភ្លេចលេខសម្ងាត់ ?',
-                    //       style: customFontSR(
-                    //           size.width * 0.033, const Color(0xffC54646)),
-                    //     ),
-                    //   ),
-                    // ),
+                    Align(
+                      alignment: Alignment.bottomRight,
+                      child: InkWell(
+                        onTap: () {},
+                        child: Text(
+                          'ភ្លេចលេខសម្ងាត់ ?',
+                          style: customFontSR(
+                              size.width * 0.033, const Color(0xffC54646)),
+                        ),
+                      ),
+                    ),
                     SizedBox(
                       height: size.height * 0.038,
                     ),
                     InkWell(
-                      onTap: () {},
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const OTPScreen()));
+                      },
                       child: Container(
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(5),

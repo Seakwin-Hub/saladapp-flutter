@@ -1,11 +1,17 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:lottie/lottie.dart';
+import 'package:saladapp/models/disease_model.dart';
+import 'package:saladapp/models/getdisease.dart';
 import 'package:saladapp/models/text_data.dart';
 import 'package:saladapp/resource/assets_route.dart';
+import 'package:saladapp/services/api_handler.dart';
 import 'package:saladapp/share/widget/bottom_sheet_navigator.dart';
+import 'package:saladapp/share/widget/content_widget.dart';
 import 'package:saladapp/share/widget/fontcustom_widget.dart';
 import 'package:saladapp/share/widget/header_widget.dart';
 
@@ -19,13 +25,38 @@ class CameraScreen extends StatefulWidget {
 class _CameraScreenState extends State<CameraScreen> {
   final ImagePicker _picker = ImagePicker();
   XFile? image;
+  String message = '';
+  String base64 = '';
+  Disease? getDisease;
+  List<GetDisease> response = [];
+  bool isLoading = false;
+
+  Future<void> uploadimg() async {
+    response = await APIHandler.uploadImage(base64);
+
+    Future.delayed(const Duration(milliseconds: 0), () {
+      APIHandler.fetchDiseaseData('disease/${response[0].diseaseid.toString()}')
+          .then((value) {
+        if (value.isNotEmpty) {
+          setState(() {
+            for (var element in value) {
+              getDisease = element;
+            }
+          });
+        }
+      });
+    });
+  }
 
   Future<void> pickImage() async {
     try {
       final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
       if (pickedFile != null) {
+        final imagebyte = await pickedFile.readAsBytes();
         setState(() {
           image = pickedFile;
+          getimgpath = image!.path;
+          base64 = base64Encode(imagebyte);
         });
       }
     } catch (e) {
@@ -34,21 +65,38 @@ class _CameraScreenState extends State<CameraScreen> {
     }
   }
 
+  void delaysecond() {
+    Future.delayed(const Duration(seconds: 3), () {
+      setState(() {
+        isLoading = true;
+      });
+    });
+  }
+
   Future<void> pickerCamera() async {
     try {
       // ignore: deprecated_member_use
       final pickedFile = await _picker.pickImage(source: ImageSource.camera);
-      setState(() {
-        if (pickedFile != null) {
+
+      if (pickedFile != null) {
+        final imagebyte = await pickedFile.readAsBytes();
+        setState(() {
           image = pickedFile;
-        }
-      });
+          base64 = base64Encode(imagebyte);
+        });
+      }
     } catch (e) {
       // ignore: avoid_print
       print(e);
     }
   }
 
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
+  String? getimgpath;
   var getBool = false;
 
   var currentIndex = 0;
@@ -57,8 +105,15 @@ class _CameraScreenState extends State<CameraScreen> {
     instruction,
     btnName,
   ];
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
+    print('>>> $isLoading');
     var size = MediaQuery.of(context).size;
     return Scaffold(
       backgroundColor: Colors.white,
@@ -226,15 +281,34 @@ class _CameraScreenState extends State<CameraScreen> {
                               )
                             : Padding(
                                 padding: EdgeInsets.symmetric(
-                                    horizontal: size.width * 0.116),
-                                child: Container(
-                                  color: Colors.amber,
-                                  padding: EdgeInsets.symmetric(
-                                      horizontal: size.width * 0.012,
-                                      vertical: size.height * 0.005),
-                                  child: Image.file(
-                                    File(image!.path),
-                                    fit: BoxFit.fill,
+                                    horizontal: size.width * 0.03),
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(20),
+                                  child: Container(
+                                    color: Colors.amber,
+                                    padding: EdgeInsets.symmetric(
+                                        horizontal: size.width * 0.012,
+                                        vertical: size.height * 0.005),
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(20),
+                                      child: response.isNotEmpty &&
+                                              isLoading == true &&
+                                              getBool == true
+                                          ? Image.memory(
+                                              base64Decode(response[0]
+                                                  .base64img
+                                                  .toString()),
+                                              fit: BoxFit.fill,
+                                            )
+                                          : ClipRRect(
+                                              borderRadius:
+                                                  BorderRadius.circular(30),
+                                              child: Image.asset(
+                                                  ImageAssets.loading,
+                                                  width: size.width * 0.03,
+                                                  fit: BoxFit.cover),
+                                            ),
+                                    ),
                                   ),
                                 ),
                               ),
@@ -245,18 +319,30 @@ class _CameraScreenState extends State<CameraScreen> {
                     ),
                     InkWell(
                       onTap: () {
+                        bool reload = false;
                         if (image != null) {
                           setState(() {
+                            uploadimg();
                             currentIndex += 1;
+                            delaysecond();
+                            getBool = true;
+                            reload = true;
                           });
-                          getBool = true;
 
                           if (currentIndex > 1) {
                             setState(() {
                               image = null;
                               currentIndex = 0;
+                              getBool = false;
                             });
-                            getBool = false;
+                            if (reload) {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const CameraScreen(),
+                                ),
+                              );
+                            }
                           }
                         } else {
                           ScaffoldMessenger.of(context).showSnackBar(
@@ -290,7 +376,7 @@ class _CameraScreenState extends State<CameraScreen> {
                         ),
                       ),
                     ),
-                    getBool == true
+                    isLoading && getBool
                         ? Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -307,17 +393,28 @@ class _CameraScreenState extends State<CameraScreen> {
                                     horizontal: size.width * 0.07,
                                     vertical: size.height * 0.016),
                                 child: Text(
-                                  'ជំងឺដែលបានរកឃើញគឺ ៖ បាក់តេរី',
+                                  getDisease != null
+                                      ? 'ជំងឺដែលបានរកឃើញគឺ ៖ ${getDisease!.disease}'
+                                      : '',
                                   style: customFontBTB(size.width * 0.037,
                                       const Color(0xffCF2323)),
                                 ),
                               ),
-                              // ContentDetial(
-                              //   size: size,
-                              // ),
-                              // ContentDetial(
-                              //   size: size,
-                              // ),
+                              ContentDetial(
+                                size: size,
+                                getType: 'ជំងឺ',
+                                title: getDisease!.disease == 'ផ្សិត'
+                                    ? 'ជំងឺ${getDisease!.disease} : ${getDisease!.typeofdisease}'
+                                    : 'ជំងឺ${getDisease!.disease}',
+                                content:
+                                    '${getDisease!.dmeaning}  ${getDisease!.cause}',
+                              ),
+                              ContentDetial(
+                                size: size,
+                                getType: 'ជំងឺ',
+                                title: 'វិធីសាស្រ្តក្នុងការព្យបាល',
+                                content: getDisease!.treatment,
+                              ),
                             ],
                           )
                         : const Text(''),

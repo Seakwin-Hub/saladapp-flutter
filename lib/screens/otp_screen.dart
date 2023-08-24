@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:saladapp/resource/assets_route.dart';
 import 'package:saladapp/share/widget/fontcustom_widget.dart';
@@ -13,12 +15,48 @@ class _OTPScreenState extends State<OTPScreen> {
   late FocusNode pin3Focus;
   late FocusNode pin4Focus;
   late FocusNode pin2Focus;
+  late FocusNode pin5Focus;
+  late FocusNode pin6Focus;
+  var getTime;
+  bool resendAgain = false;
+  bool clearTxt = false;
+  late Timer timer;
+  int start = 30;
+
+  void resend() {
+    setState(() {
+      resendAgain = true;
+      start = 30;
+    });
+
+    const oneSec = Duration(seconds: 1);
+    timer = Timer.periodic(oneSec, (timer) {
+      setState(() {
+        if (start == 0) {
+          resendAgain = false;
+          timer.cancel();
+        } else {
+          start--;
+        }
+        print(start);
+      });
+    });
+  }
 
   @override
   void initState() {
+    resend();
     pin2Focus = FocusNode();
     pin3Focus = FocusNode();
     pin4Focus = FocusNode();
+    pin5Focus = FocusNode();
+    pin6Focus = FocusNode();
+    // TextEditingController digit1 = TextEditingController();
+    // TextEditingController digit2 = TextEditingController();
+    // TextEditingController digit3 = TextEditingController();
+    // TextEditingController digit4 = TextEditingController();
+    // TextEditingController digit5 = TextEditingController();
+    // TextEditingController digit6 = TextEditingController();
 
     super.initState();
   }
@@ -28,6 +66,9 @@ class _OTPScreenState extends State<OTPScreen> {
     pin2Focus.dispose();
     pin3Focus.dispose();
     pin4Focus.dispose();
+    pin5Focus.dispose();
+    pin6Focus.dispose();
+    timer.cancel();
     super.dispose();
   }
 
@@ -49,7 +90,7 @@ class _OTPScreenState extends State<OTPScreen> {
             child: Column(
               children: [
                 SizedBox(
-                  height: size.height * 0.1,
+                  height: size.height * 0.05,
                 ),
                 Image.asset(
                   ImageAssets.logo,
@@ -78,14 +119,14 @@ class _OTPScreenState extends State<OTPScreen> {
                 ),
                 Padding(
                   padding: EdgeInsets.symmetric(
-                      horizontal: size.width * 0.08,
+                      horizontal: size.width * 0.05,
                       vertical: size.height * 0.05),
                   child: Form(
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         SizedBox(
-                          width: size.width * 0.15,
+                          width: size.width * 0.12,
                           child: TextFormField(
                             autofocus: true,
                             keyboardType: TextInputType.number,
@@ -102,10 +143,12 @@ class _OTPScreenState extends State<OTPScreen> {
                         ),
                         otpBox(size, pin2Focus, pin3Focus),
                         otpBox(size, pin3Focus, pin4Focus),
+                        otpBox(size, pin4Focus, pin5Focus),
+                        otpBox(size, pin5Focus, pin6Focus),
                         SizedBox(
-                          width: size.width * 0.15,
+                          width: size.width * 0.12,
                           child: TextFormField(
-                            focusNode: pin4Focus,
+                            focusNode: pin6Focus,
                             keyboardType: TextInputType.number,
                             textAlign: TextAlign.center,
                             style: customFontBassac(
@@ -114,7 +157,7 @@ class _OTPScreenState extends State<OTPScreen> {
                                     .withOpacity(0.8)),
                             decoration: textFieldStyle(size),
                             onChanged: (value) {
-                              pin4Focus.unfocus();
+                              pin6Focus.unfocus();
                             },
                           ),
                         ),
@@ -133,26 +176,57 @@ class _OTPScreenState extends State<OTPScreen> {
                       style: customFontBassac(size.width * 0.047,
                           const Color.fromARGB(221, 80, 26, 26)),
                     ),
-                    Expanded(
-                      child: TweenAnimationBuilder(
-                        tween: Tween(begin: 30.0, end: 0),
-                        duration: const Duration(seconds: 30),
-                        builder: (context, value, child) => Text(
-                          value < 10
-                              ? ' 00: 0${value.toInt()}'
-                              : ' 00: ${value.toInt()}',
-                          style: customFontKangrey(size.width * 0.04,
-                              const Color.fromARGB(221, 255, 0, 0)),
-                        ),
-                      ),
-                    )
+                    resendAgain
+                        ? Text(
+                            start < 10 ? ' 00: 0$start' : ' 00: $start',
+                            style: customFontKangrey(size.width * 0.04,
+                                const Color.fromARGB(221, 255, 0, 0)),
+                          )
+                        : Text(
+                            ' 00: 00',
+                            style: customFontKangrey(size.width * 0.04,
+                                const Color.fromARGB(221, 255, 0, 0)),
+                          )
+                    // Expanded(
+                    //   child: TweenAnimationBuilder(
+                    //     tween: Tween(begin: 30.0, end: 0),
+                    //     duration: Duration(seconds: 30),
+                    //     builder: (context, value, child) {
+                    //       return Text(
+                    //         value < 10
+                    //             ? ' 00: 0${value.toInt()}'
+                    //             : ' 00: ${value.toInt()}',
+                    //         style: customFontKangrey(size.width * 0.04,
+                    //             const Color.fromARGB(221, 255, 0, 0)),
+                    //       );
+                    //     },
+                    //   ),
+                    // )
                   ],
                 ),
                 SizedBox(
                   height: size.height * 0.07,
                 ),
                 InkWell(
-                  onTap: () {},
+                  onTap: () {
+                    print(start);
+                    if (start != 0) {
+                      print('do sth');
+                      print(start);
+                    } else if (start != 0) {
+                      print('do sth2');
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('លេខសម្ងាត់អ្នកត្រូវបានផុតកំណត់',
+                              style: customFontBTB(
+                                  size.width * 0.04, Colors.white)),
+                          backgroundColor:
+                              const Color.fromARGB(255, 255, 17, 0),
+                        ),
+                      );
+                    }
+                  },
                   child: Container(
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(20),
@@ -176,8 +250,12 @@ class _OTPScreenState extends State<OTPScreen> {
                 SizedBox(
                   height: size.height * 0.07,
                 ),
-                GestureDetector(
-                  onTap: () {},
+                TextButton(
+                  onPressed: () {
+                    if (resendAgain) return;
+
+                    resend();
+                  },
                   child: const Text(
                     'ផ្ញើលេខកូដម្តងទៀត',
                     style: TextStyle(
@@ -198,7 +276,7 @@ class _OTPScreenState extends State<OTPScreen> {
 
   SizedBox otpBox(Size size, FocusNode focusNode1, focusNode2) {
     return SizedBox(
-      width: size.width * 0.15,
+      width: size.width * 0.12,
       child: TextFormField(
         focusNode: focusNode1,
         keyboardType: TextInputType.number,

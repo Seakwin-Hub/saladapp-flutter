@@ -20,4 +20,5 @@ class ImageAssets {
   static const String saladbar = '$ICONS_PATH/saladbar.png';
   static const String diseasebar = '$ICONS_PATH/diseasebar.png';
   static const String userbar = '$ICONS_PATH/userbar.png';
+  static const String loadingdata = '$ICONS_PATH/loadingtrain.json';
 }

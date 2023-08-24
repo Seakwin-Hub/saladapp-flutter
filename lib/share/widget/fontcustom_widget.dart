@@ -30,6 +30,6 @@ InputDecoration textFieldStyle(Size size) {
             const BorderSide(color: Color.fromARGB(255, 33, 40, 61), width: 2),
         borderRadius: BorderRadius.circular(8)),
     contentPadding: EdgeInsets.symmetric(
-        horizontal: size.width * 0.04, vertical: size.height * 0.012),
+        horizontal: size.width * 0.01, vertical: size.height * 0.012),
   );
 }

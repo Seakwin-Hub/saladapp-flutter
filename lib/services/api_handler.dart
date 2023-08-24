@@ -12,27 +12,27 @@ String apiHandleError = 'Problem with API';
 
 class APIHandler {
   static Future<List<GetDisease>> uploadImage(String base64) async {
-    try {
-      if (base64.isNotEmpty) {
-        final response = await http.post(
-          Uri.parse('http://127.0.0.1:5000/imageupload'),
-          body: jsonEncode({'image': base64}),
-          headers: {'Content-Type': 'application/json'},
-        );
-        final parsed = jsonDecode(response.body);
-        if (response.statusCode == 200) {
-          print('Image uploaded successfully');
-          var getDisease = (parsed['objresponse'] as List)
-              .map((itemdisease) => GetDisease.fromJson(itemdisease))
-              .toList();
-          return getDisease;
-        } else {
-          throw Exception(apiHandleError);
-        }
+    // try {
+    if (base64.isNotEmpty) {
+      final response = await http.post(
+        Uri.parse('http://127.0.0.1:5000/imageupload'),
+        body: jsonEncode({'image': base64}),
+        headers: {'Content-Type': 'application/json'},
+      );
+      final parsed = jsonDecode(response.body);
+      if (response.statusCode == 200) {
+        print('Image uploaded successfully');
+        var getDisease = (parsed['objresponse'] as List)
+            .map((itemdisease) => GetDisease.fromJson(itemdisease))
+            .toList();
+        return getDisease;
+      } else {
+        throw Exception(apiHandleError);
       }
-    } catch (e) {
-      print(e);
     }
+    // } catch (e) {
+    //   print(e);
+    // }
     return [];
   }
 

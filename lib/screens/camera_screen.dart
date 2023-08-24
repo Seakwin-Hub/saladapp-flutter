@@ -4,7 +4,6 @@ import 'dart:io';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:lottie/lottie.dart';
 import 'package:saladapp/models/disease_model.dart';
 import 'package:saladapp/models/getdisease.dart';
 import 'package:saladapp/models/text_data.dart';
@@ -33,19 +32,23 @@ class _CameraScreenState extends State<CameraScreen> {
 
   Future<void> uploadimg() async {
     response = await APIHandler.uploadImage(base64);
-
-    Future.delayed(const Duration(milliseconds: 0), () {
-      APIHandler.fetchDiseaseData('disease/${response[0].diseaseid.toString()}')
-          .then((value) {
-        if (value.isNotEmpty) {
-          setState(() {
-            for (var element in value) {
-              getDisease = element;
+    if (response.isNotEmpty) {
+      if (response[0].diseaseid != 0) {
+        Future.delayed(const Duration(milliseconds: 0), () {
+          APIHandler.fetchDiseaseData(
+                  'disease/${response[0].diseaseid.toString()}')
+              .then((value) {
+            if (value.isNotEmpty) {
+              setState(() {
+                for (var element in value) {
+                  getDisease = element;
+                }
+              });
             }
           });
-        }
-      });
-    });
+        });
+      }
+    }
   }
 
   Future<void> pickImage() async {
@@ -113,7 +116,6 @@ class _CameraScreenState extends State<CameraScreen> {
 
   @override
   Widget build(BuildContext context) {
-    print('>>> $isLoading');
     var size = MediaQuery.of(context).size;
     return Scaffold(
       backgroundColor: Colors.white,
@@ -293,7 +295,8 @@ class _CameraScreenState extends State<CameraScreen> {
                                       borderRadius: BorderRadius.circular(20),
                                       child: response.isNotEmpty &&
                                               isLoading == true &&
-                                              getBool == true
+                                              getBool == true &&
+                                              response[0].diseaseid != 0
                                           ? Image.memory(
                                               base64Decode(response[0]
                                                   .base64img
@@ -321,8 +324,9 @@ class _CameraScreenState extends State<CameraScreen> {
                       onTap: () {
                         bool reload = false;
                         if (image != null) {
+                          uploadimg();
+
                           setState(() {
-                            uploadimg();
                             currentIndex += 1;
                             delaysecond();
                             getBool = true;
@@ -376,7 +380,7 @@ class _CameraScreenState extends State<CameraScreen> {
                         ),
                       ),
                     ),
-                    isLoading && getBool
+                    isLoading && getBool && getDisease != null
                         ? Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -388,36 +392,58 @@ class _CameraScreenState extends State<CameraScreen> {
                                 height: size.height * 0.016,
                                 color: const Color(0xff8E8E8E).withOpacity(0.1),
                               ),
-                              Padding(
-                                padding: EdgeInsets.symmetric(
-                                    horizontal: size.width * 0.07,
-                                    vertical: size.height * 0.016),
-                                child: Text(
-                                  getDisease != null
-                                      ? 'ជំងឺដែលបានរកឃើញគឺ ៖ ${getDisease!.disease}'
-                                      : '',
-                                  style: customFontBTB(size.width * 0.037,
-                                      const Color(0xffCF2323)),
-                                ),
-                              ),
-                              ContentDetial(
-                                size: size,
-                                getType: 'ជំងឺ',
-                                title: getDisease!.disease == 'ផ្សិត'
-                                    ? 'ជំងឺ${getDisease!.disease} : ${getDisease!.typeofdisease}'
-                                    : 'ជំងឺ${getDisease!.disease}',
-                                content:
-                                    '${getDisease!.dmeaning}  ${getDisease!.cause}',
-                              ),
-                              ContentDetial(
-                                size: size,
-                                getType: 'ជំងឺ',
-                                title: 'វិធីសាស្រ្តក្នុងការព្យបាល',
-                                content: getDisease!.treatment,
-                              ),
+                              Column(
+                                children: [
+                                  Padding(
+                                    padding: EdgeInsets.symmetric(
+                                        horizontal: size.width * 0.07,
+                                        vertical: size.height * 0.016),
+                                    child: Text(
+                                      getDisease != null
+                                          ? 'ជំងឺដែលបានរកឃើញគឺ ៖ ${getDisease!.disease}'
+                                          : '',
+                                      style: customFontBTB(size.width * 0.037,
+                                          const Color(0xffCF2323)),
+                                    ),
+                                  ),
+                                  ContentDetial(
+                                    size: size,
+                                    getType: 'ជំងឺ',
+                                    title: getDisease!.disease == 'ផ្សិត'
+                                        ? 'ជំងឺ${getDisease!.disease} : ${getDisease!.typeofdisease}'
+                                        : 'ជំងឺ${getDisease!.disease}',
+                                    content:
+                                        '${getDisease!.dmeaning}  ${getDisease!.cause}',
+                                  ),
+                                  ContentDetial(
+                                    size: size,
+                                    getType: 'ជំងឺ',
+                                    title: 'វិធីសាស្រ្តក្នុងការព្យបាល',
+                                    content: getDisease!.treatment,
+                                  ),
+                                ],
+                              )
                             ],
                           )
-                        : const Text(''),
+                        : response.isNotEmpty && response[0].diseaseid == 0
+                            ? Column(
+                                children: [
+                                  SizedBox(
+                                    height: size.width * 0.5,
+                                  ),
+                                  Text(
+                                    'រូបភាពមិនអាចស្វែងរកជំងឺបាន ! សូមជ្រើសរើសរូបភាពផ្សេងទៀត',
+                                    style: customFontBTB(
+                                        size.width * 0.035, Colors.red),
+                                  ),
+                                  Text(
+                                    '!!!',
+                                    style: customFontBTB(
+                                        size.width * 0.05, Colors.red),
+                                  ),
+                                ],
+                              )
+                            : const Text('')
                   ],
                 ),
               ),

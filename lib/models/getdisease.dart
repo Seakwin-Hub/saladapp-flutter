@@ -4,9 +4,9 @@ List<GetDisease> postFromJsonDisease(String str) =>
     List<GetDisease>.from(json.decode(str).map((x) => GetDisease.fromJson(x)));
 
 class GetDisease {
-  String base64img;
-  String message;
-  int diseaseid;
+  String base64img = '';
+  String message = '';
+  int diseaseid = 0;
 
   GetDisease(
       {required this.base64img,
